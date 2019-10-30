@@ -23,6 +23,7 @@ repositories {
 dependencies {
     // This dependency is used by the application.
     implementation 'com.google.guava:guava:28.0-jre'
+    implementation 'org.apache.commons:commons-csv:1.7'
 
     // Use JUnit test framework
     testImplementation 'junit:junit:4.12'
