@@ -33,6 +33,11 @@ public class App {
             var joiner = Joiner.on("->");
             System.out.printf("BFS path: %s%n", joiner.join(path));
 
+            var noPerth = graph.remove("Perth");
+
+            System.out.printf("Graph after Perth is removed:%n%s",
+                    noPerth);
+
         } catch (IOException e) {
             System.err.printf("Error reading from input graph CSV: %s%n",
                     e.getLocalizedMessage());
