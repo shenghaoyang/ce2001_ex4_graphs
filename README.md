@@ -12,8 +12,35 @@ Gradle is used to manage the build.
 
 ## What's working
 
-- Basically, _nothing_. This is just a skeleton.
-  
+- Graph class
+
+    - Reading a graph from its CSV representation.
+    - Performing a BFS with given target and start nodes to find the
+      shortest path between two nodes.
+    - Deleting nodes from graphs in a non in-place manner for performance
+      comparisons with different graph sizes.
+
+## What's to be done
+
+- Graph class
+    - Exporting the graph to a Writer for visualization in the presentation.
+
+- Main application
+    - Benchmark harness to test BFS.
+
+- Benchmark setup
+    - JVM options for benchmarking.
+        - AOT compile?
+        - Disable JIT?
+        - Use low-jitter GC?
+        - ..... any other things that we can do to make our performance
+          measurements more consistent.
+
+- Tests
+    - Test cases validating BFS correctness (could compare against guava).
+    - Test cases verifying saving / restoring graphs from CSV.
+    - Test cases verifying node deletion functionality.
+
 ## Building the benchmark tool
 
 ### Clone from git
@@ -22,7 +49,7 @@ Gradle is used to manage the build.
 git clone https://github.com/shenghaoyang/ce2001_ex4_graphs.git
 cd ce2001_ex4_graphs
 ./gradlew build
-./gradlew run # Does nothing at this stage, it's an empty wrapper.
+./gradlew run # Runs a basic smoke test.
 ```
 
 After cloning, you can also import the project into your favorite IDE,
