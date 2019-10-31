@@ -33,7 +33,7 @@ public class Node<K extends Comparable<K>>
      *
      * @param k name of the node.
      */
-    public Node(K k) {
+    Node(K k) {
         this(k, new LinkedList<>());
     }
 
@@ -42,10 +42,10 @@ public class Node<K extends Comparable<K>>
      *
      * @param k name of the node.
      * @param n list of node neighbors. The order in which nodes are presented
-     *          in this list is the order of visitation any graph traversal
+     *          in this list is the order of visitation any grbaph traversal
      *          operation will use when traversing a graph containing this node.
      */
-    public Node(K k, List<Node<K>> n) {
+    Node(K k, List<Node<K>> n) {
         name = k;
         this.neighbors = new ArrayList<>(n);
         this.neighborSet = new HashSet<>(this.neighbors);
@@ -117,11 +117,14 @@ public class Node<K extends Comparable<K>>
      * this node is added to the other node's neighbor list, following the
      * above-mentioned semantics.
      *
+     * This method is package-private because users should have no need to add
+     * new nodes to neighbor lists of existing nodes.
+     *
      * @param n node to add to the neighbor list.
      * @throws IllegalArgumentException when the node already exists
      *                                  in the list.
      */
-    public void addNeighbor(Node<K> n) {
+     void addNeighbor(Node<K> n) {
         if (neighborSet.contains(n))
             throw new IllegalArgumentException(
                     String.format("Node %s is already a neighbor of node %s.",
@@ -139,7 +142,7 @@ public class Node<K extends Comparable<K>>
      *
      * @param l new neighbor list to use.
      */
-    public void updateNeighbors(List<Node<K>> l) {
+    void updateNeighbors(List<Node<K>> l) {
         neighbors.clear();
         neighborSet.clear();
         neighbors.addAll(l);
@@ -150,6 +153,8 @@ public class Node<K extends Comparable<K>>
      * Obtain a view of the neighbor list of this node.
      * Nodes are arranged in the order that they will be visited during graph
      * traversal of a graph containing this node.
+     *
+     * This list is immutable.
      *
      * After / during an operation to mutate the node's neighbor list,
      * this view becomes / is invalid.
@@ -169,7 +174,7 @@ public class Node<K extends Comparable<K>>
      *                 traversal by determining the order of nodes within a
      *                 neighbor list of a node.
      */
-    public void rearrangeNeighbors(Consumer<ArrayList<Node<K>>> arranger) {
+    void rearrangeNeighbors(Consumer<ArrayList<Node<K>>> arranger) {
         arranger.accept(neighbors);
     }
 }
