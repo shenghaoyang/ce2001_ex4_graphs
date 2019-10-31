@@ -1,5 +1,6 @@
 package Lab4.graph;
 
+import com.google.common.collect.Sets;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 
@@ -11,6 +12,8 @@ import java.util.function.Consumer;
 /**
  * Class representing a undirected and unweighted graph, with no self-edges
  * and multiple edges between the same two nodes.
+ *
+ * Graphs are immutable.
  *
  * Strings are used to uniquely identify each node.
  */
@@ -61,14 +64,7 @@ public class Graph {
      */
     public Graph(Reader r,
                  Consumer<ArrayList<Node<String>>> sorter) throws IOException {
-        /*
-         * Temporary storage to hold nodes as they are being read.
-         */
         nodes = new TreeMap<>();
-
-        /*
-         * Build nodes into temporary storage.
-         */
         try (var in = CSVParser.parse(r, CSVFormat.RFC4180)) {
             for (var record : in) {
                 var rnum = in.getRecordNumber();
@@ -97,11 +93,32 @@ public class Graph {
                 }
             }
         }
+        rearrange(sorter);
+    }
 
-        /*
-         * Define the visitation order.
-         */
-        nodes.forEach((k, v) -> v.rearrangeNeighbors(sorter));
+    /**
+     * Obtain a set of node name to node mappings for nodes contained within
+     * the graph.
+     *
+     * This set is immutable, and yields mappings in the default name
+     * (string) sort order upon iteration.
+     *
+     * @return set of entries mapping node name to node objects.
+     */
+    public Set<Map.Entry<String, Node<String>>> getNodes() {
+        return Collections.unmodifiableSet(nodes.entrySet());
+    }
+
+    /**
+     * Obtain a set of the names of all nodes contained within the graph.
+     *
+     * This set is immutable, and yields names in the default string sort order
+     * upon iteration.
+     *
+     * @return set of names of all nodes in the graph.
+     */
+    public Set<String> getNames() {
+        return Collections.unmodifiableSet(nodes.keySet());
     }
 
     /**
@@ -119,6 +136,9 @@ public class Graph {
     /**
      * Create a new (deep) copy of the graph with (the) specified node(s)
      * removed.
+     *
+     * The order in which nodes appear in the adjacency lists of each node
+     * in the new graph is maintained, with the exception of deleted nodes.
      *
      * @param n name of the nodes to remove.
      * @return a new copy of the graph with node(s) removed.
@@ -155,7 +175,7 @@ public class Graph {
     }
 
     /**
-     * Performs a breath first search on the graph, attempting the locate
+     * Performs a breadth first search on the graph, attempting the locate
      * a node, and recovering the path to that node.
      *
      * All collections passed to this method must have been cleared.
@@ -206,11 +226,12 @@ public class Graph {
 
     @Override
     public String toString() {
-        var builder = new StringBuilder(String.format("Graph with nodes:%n"));
+        var builder = new StringBuilder(String.format("Graph{%n"));
 
-        nodes.forEach((k, v) -> builder.append(String.format("%s%n",
+        nodes.forEach((k, v) -> builder.append(String.format("\t%s%n",
                 v.toString())));
 
+        builder.append(String.format("}%n"));
         return builder.toString();
     }
 }
