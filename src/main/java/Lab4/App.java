@@ -13,7 +13,12 @@ import java.util.HashSet;
 
 public class App {
     public static void main(String[] args) {
-        var nodedef = "Singapore,Perth\r\nPerth,Greenland,Iceland\r\nIceland,Greenland";
+        var nodedef = Joiner.on("\r\n").join(
+                new String[]{
+                        "Singapore,Perth",
+                        "Perth,Greenland,Iceland",
+                        "Iceland,Greenland"
+                });
         var in = new StringReader(nodedef);
 
         try {
