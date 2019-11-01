@@ -73,10 +73,6 @@ public class Graph {
                     throw new IllegalArgumentException(String.format(
                             "record %d: node unnamed / empty line.", rnum));
 
-                if (record.size() < 2)
-                    throw new IllegalArgumentException(String.format(
-                            "record %d: node has no neighbors.", rnum));
-
                 var nodeName = record.get(0);
 
                 for (var n : record)
@@ -210,14 +206,15 @@ public class Graph {
                     "source / target node not contained in graph.");
 
         queue.add(nodes.get(s));
+        visited.add(s);
         while (!queue.isEmpty()) {
             var n = queue.removeFirst();
-            visited.add(n.getName());
 
             for (var neigh : n.getNeighbors()) {
                 if (visited.contains(neigh.getName()))
                     continue;
 
+                visited.add(neigh.getName());
                 queue.add(neigh);
                 pred.put(neigh.getName(), n.getName());
             }
