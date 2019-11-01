@@ -217,6 +217,9 @@ public class Graph {
                 visited.add(neigh.getName());
                 queue.add(neigh);
                 pred.put(neigh.getName(), n.getName());
+
+                if (Objects.equals(neigh.getName(), t))
+                    return;
             }
         }
     }
