@@ -40,6 +40,54 @@ Gradle is used to manage the build.
     - Test cases validating BFS correctness (could compare against guava).
     - Test cases verifying saving / restoring graphs from CSV.
     - Test cases verifying node deletion functionality.
+    
+## The data
+
+- The data file is located at `data/connected_airports.csv`
+
+- The input data we will be performing BFS on is a undirected, unweighted,
+  graph with no self-edges where the nodes are airports and the edges represent 
+  bidirectional direct connections between airports (i.e, nodes that have an 
+  edge between them represent airports (A, B) that have at least one flight
+  from A -> B  AND also another flight from B -> A, where the flights are
+  both non-stop).
+
+- The input data is stored in CSV format, with each row containing information
+  on one node, with the first column in each row representing
+  the airport name, and subsequent columns representing the names of 
+  airports that this airport is connected to. Airports are referred to using
+  their IATA codes. (i.e, the adjacency list of that node is represented by 
+  the subsequent columns).
+  
+- Each edge (A <-> B) is specified twice, once in the row representing the
+  airport A and another time in the row representing the airport B.
+  
+## Testing methodology
+
+- We are requested to benchmark the performance of BFS in terms of CPU time,
+  against various input graph sizes. Here, we'll vary the number of nodes.
+
+- We vary the graph size by randomly choosing nodes to eliminate from the graph
+  in order to build a graph of smaller size. This process is called a _draw_,
+  and _draws_ are performed for a pre specified number of times.
+  
+- After each _draw_ to produce a smaller graph, we run BFS to locate the
+  shortest path between two airports in terms of plane changes, and measuring
+  the time taken. The actual implementation measures the average time for BFS
+  after looping through the BFS search a number of times.
+
+- In each timing loop, we mutate the adjacency lists of the nodes in the graph
+  produced from the _draw_ process in a specified manner, either sorting it
+  in an ascending fashion, a descending fashion, or a random manner.
+
+- After the timing loops, the average edge count and BFS search time are 
+  reported and collected.
+
+- After all _draws_ complete, the average edge count for all draws and the
+  average BFS search time for all draws (representing an average search time 
+  for a graph of this number of nodes) are reported.
+  
+- The appropriate metrics are processed and analysis results are produced.
 
 ## Building the benchmark tool
 
