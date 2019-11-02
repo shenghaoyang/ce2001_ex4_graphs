@@ -209,6 +209,17 @@ public class BenchmarkCommand implements Callable<Integer> {
                 }
                 pathExists = false;
             }
+
+            switch (sortMode) {
+                case ASCENDING:
+                    mutatedGraph.rearrange(Helpers::AscendingRearranger);
+                    break;
+                case DESCENDING:
+                    mutatedGraph.rearrange(Helpers::DescendingRearranger);
+                default:
+                    break;
+            }
+
             for (int loop = 0; loop < (loopsPerDraw + warmupLoopsPerDraw);
                  ++loop) {
                 /*
@@ -217,17 +228,11 @@ public class BenchmarkCommand implements Callable<Integer> {
                  * Note that optimizations could be used to avoid ascending /
                  * descending sort repetitions, but it doesn't really matter.
                  */
-                switch (sortMode) {
-                    case RANDOM:
-                        mutatedGraph.rearrange(l ->
-                                Helpers.RandomRearranger(l, rng));
-                        break;
-                    case ASCENDING:
-                        mutatedGraph.rearrange(Helpers::AscendingRearranger);
-                        break;
-                    case DESCENDING:
-                        mutatedGraph.rearrange(Helpers::DescendingRearranger);
-                }
+
+                if (sortMode == SortMode.RANDOM)
+                    mutatedGraph.rearrange(
+                            l -> Helpers.RandomRearranger(l, rng));
+
                 pred.clear();
                 toVisit.clear();
 
