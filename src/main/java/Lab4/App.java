@@ -1,5 +1,6 @@
 package Lab4;
 
+import Lab4.Benchmark.BenchmarkCommand;
 import picocli.CommandLine;
 
 public class App {

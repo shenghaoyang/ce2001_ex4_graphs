@@ -2,12 +2,20 @@ package Lab4.graph;
 
 import com.google.common.base.Objects;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Helpers {
+    public static void RandomRearranger(List<Node<String>> l, Random rnd) {
+        Collections.shuffle(l, rnd);
+    }
+    public static void DescendingRearranger(List<Node<String>> l) {
+        l.sort(Comparator.comparing(Node<String>::getName).reversed());
+    }
+
+    public static void AscendingRearranger(List<Node<String>> l) {
+        l.sort(null);
+    }
+
     /**
      * Recover the shortest path from a source node to a target node
      * from the predecessor map returned from a BFS.

@@ -150,6 +150,15 @@ public class Node<K extends Comparable<K>>
     }
 
     /**
+     * Obtain the count of neighbors this node has in its adjacency list.
+     *
+     * @return neighbor count.
+     */
+    public int getNeighborCount() {
+        return neighbors.size();
+    }
+
+    /**
      * Obtain a view of the neighbor list of this node.
      * Nodes are arranged in the order that they will be visited during graph
      * traversal of a graph containing this node.
@@ -174,7 +183,7 @@ public class Node<K extends Comparable<K>>
      *                 traversal by determining the order of nodes within a
      *                 neighbor list of a node.
      */
-    void rearrangeNeighbors(Consumer<ArrayList<Node<K>>> arranger) {
+    void rearrangeNeighbors(Consumer<List<Node<K>>> arranger) {
         arranger.accept(neighbors);
     }
 }

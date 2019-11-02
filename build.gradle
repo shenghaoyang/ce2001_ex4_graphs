@@ -35,3 +35,24 @@ application {
     // Define the main class for the application
     mainClassName = 'Lab4.App'
 }
+
+task BenchmarkNoJitShenandoah(type : JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+    main = 'Lab4.App'
+    jvmArgs = ['-XX:+AlwaysPreTouch', '-Xms = -Xmx',
+               '-XX:+UseTransparentHugePages', '-XX:-UseBiasedLocking',
+               '-XX:+DisableExplicitGC', '-XX:+UseNUMA',
+               '-Djava.compiler=NONE']
+    maxHeapSize = '4G'
+    minHeapSize = '4G'
+}
+
+task BenchmarkJitShenandoah(type : JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+    main = 'Lab4.App'
+    jvmArgs = ['-XX:+AlwaysPreTouch', '-Xms = -Xmx',
+               '-XX:+UseTransparentHugePages', '-XX:-UseBiasedLocking',
+               '-XX:+DisableExplicitGC', '-XX:+UseNUMA']
+    maxHeapSize = '4G'
+    minHeapSize = '4G'
+}

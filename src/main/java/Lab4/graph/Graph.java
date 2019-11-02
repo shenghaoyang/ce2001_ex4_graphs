@@ -1,6 +1,5 @@
 package Lab4.graph;
 
-import com.google.common.collect.Sets;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 
@@ -63,7 +62,7 @@ public class Graph {
      * @throws IOException on I/O error.
      */
     public Graph(Reader r,
-                 Consumer<ArrayList<Node<String>>> sorter) throws IOException {
+                 Consumer<List<Node<String>>> sorter) throws IOException {
         nodes = new TreeMap<>();
         try (var in = CSVParser.parse(r, CSVFormat.RFC4180)) {
             for (var record : in) {
@@ -90,6 +89,27 @@ public class Graph {
             }
         }
         rearrange(sorter);
+    }
+
+    /**
+     * Obtain the number of edges in this graph.
+     *
+     * @return count of number of edges in this graph.
+     */
+    public long getEdgeCount() {
+        /* divide by two because we include each edge twice */
+        return (nodes.values().stream()
+                    .mapToLong(Node::getNeighborCount)
+                    .sum() / 2);
+    }
+
+    /**
+     * Obtain the number of nodes in this graph.
+     *
+     * @return count of number of nodes in this graph.
+     */
+    public int getNodeCount() {
+        return nodes.size();
     }
 
     /**
@@ -125,7 +145,7 @@ public class Graph {
      *
      * @param rearranger function to use to rearrange the adjacency lists.
      */
-    public void rearrange(Consumer<ArrayList<Node<String>>> rearranger) {
+    public void rearrange(Consumer<List<Node<String>>> rearranger) {
         nodes.forEach((k, v) -> v.rearrangeNeighbors(rearranger));
     }
 
@@ -191,14 +211,12 @@ public class Graph {
      * @param s name of source node to start BFS from.
      * @param t name of target node to find.
      * @param pred map used to store node predecessor information.
-     * @param visited set used to mark nodes as visited.
      * @param queue queue used to store nodes pending visitation.
      * @throws IllegalArgumentException if the source or target node cannot
      *                                  be found in the graph.
      */
     public void breadthFirstSearch(String s, String t,
                                    Map<String, String> pred,
-                                   Set<String> visited,
                                    Deque<Node<String>> queue) {
 
         if ((!nodes.containsKey(s)) || (!nodes.containsKey(t)))
@@ -206,18 +224,16 @@ public class Graph {
                     "source / target node not contained in graph.");
 
         queue.add(nodes.get(s));
-        visited.add(s);
+        pred.put(s, s);
         while (!queue.isEmpty()) {
             var n = queue.removeFirst();
 
             for (var neigh : n.getNeighbors()) {
-                if (visited.contains(neigh.getName()))
+                if (pred.containsKey(neigh.getName()))
                     continue;
 
-                visited.add(neigh.getName());
                 queue.add(neigh);
                 pred.put(neigh.getName(), n.getName());
-
                 if (Objects.equals(neigh.getName(), t))
                     return;
             }
