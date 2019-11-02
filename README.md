@@ -76,7 +76,7 @@ Gradle is used to manage the build.
   and _draws_ are performed for a pre specified number of times.
   
 - After each _draw_ to produce a smaller graph, we run BFS to locate the
-  shortest path between two airports in terms of plane changes, and measuring
+  shortest path between two airports in terms of plane changes, and measure
   the time taken. The actual implementation measures the average time for BFS
   after looping through the BFS search a number of times.
 
