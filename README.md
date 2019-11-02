@@ -10,6 +10,10 @@ CE2002 course (AY19/20 Semester 1).
 
 Gradle is used to manage the build.
 
+## Requirements
+
+- JDK 12.
+
 ## What's working
 
 - Graph class
@@ -166,7 +170,7 @@ Usage: bfsBench [-hV] [--[no-]preserve-path] --draws=<draws> --graph=<graphSrc>
   for each draw to serve as additional computation to warm up the JVM
   and force it to load classes and perform JIT.
 
-### Using the GraalVM native image (Recommended - most consistent performance)
+### Using the GraalVM native image (Recommended - most consistent performance).
 
 Running the GraalVM native image allows for the most consistent performance
 as all compilation is done AOT. It also lets us complete the benchmark in
