@@ -181,26 +181,32 @@ public class BenchmarkCommand implements Callable<Integer> {
             var mutatedGraph = citiesGraph.remove(
                     Select(citiesGraph.getNames().toArray(new String[0]),
                             origNodes - size, rng));
+            var nodeNames = mutatedGraph.getNames();
+            if (!(nodeNames.contains(cities[0]))
+                    || !(nodeNames.contains(cities[1]))) {
+                System.err.println("Warning: modified graph does " +
+                        "not contain source and destination nodes. Retrying.");
+                draw -= 1;
+                continue;
+            }
+
+            var pathExists = true;
             var edges = mutatedGraph.getEdgeCount();
-            /*
-             * Fail-fast if there is no path preserved between the nodes.
-             */
-            if (preservePath) {
+            try {
                 pred.clear();
                 toVisit.clear();
-
-                try {
-                    mutatedGraph.breadthFirstSearch(cities[0], cities[1], pred,
-                            toVisit);
-                    Helpers.BFSPathExtract(cities[0], cities[1], pred);
-                } catch (IllegalArgumentException e) {
+                mutatedGraph.breadthFirstSearch(cities[0], cities[1], pred,
+                        toVisit);
+                Helpers.BFSPathExtract(cities[0], cities[1], pred);
+            } catch (IllegalArgumentException e) {
+                if (preservePath) {
                     System.err.println("Warning: unable to find a path " +
                             "between destination and source nodes. Retrying.");
                     draw -= 1;
                     continue;
                 }
+                pathExists = false;
             }
-
             for (int loop = 0; loop < (loopsPerDraw + warmupLoopsPerDraw);
                  ++loop) {
                 /*
@@ -231,9 +237,9 @@ public class BenchmarkCommand implements Callable<Integer> {
 
                 System.out.printf("Draw %d: loop %d: %d edges: %d ns: " +
                                 "path found: %s.%n", draw, loop, edges,
-                        elapsed, Joiner.on(" -> ").join(
+                        elapsed, pathExists ? Joiner.on(" -> ").join(
                                 Helpers.BFSPathExtract(cities[0], cities[1],
-                                        pred)));
+                                        pred)) : "no path");
 
                 if (loop < warmupLoopsPerDraw)
                     continue;
