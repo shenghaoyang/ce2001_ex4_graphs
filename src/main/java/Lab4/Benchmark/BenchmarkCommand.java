@@ -15,28 +15,28 @@ import java.util.concurrent.Callable;
 import java.util.stream.DoubleStream;
 import java.util.stream.LongStream;
 
+/**
+ * Methods to sort the adjacency lists of each node.
+ */
+enum SortMode {
+    /**
+     * Sort the adjacency lists in ascending (alphabetical) order.
+     */
+    ASCENDING,
+    /**
+     * Sort the adjacency lists in descending (alphabetical) order.
+     */
+    DESCENDING,
+    /**
+     * Sort the adjacency lists in random order.
+     */
+    RANDOM
+}
+
 @CommandLine.Command(description = "Benchmark the performance of BFS.",
                      name = "bfsBench", mixinStandardHelpOptions = true,
                      version = "0")
 public class BenchmarkCommand implements Callable<Integer> {
-    /**
-     * Methods to sort the adjacency lists of each node.
-     */
-    private enum SortMode {
-        /**
-         * Sort the adjacency lists in ascending (alphabetical) order.
-         */
-        ASCENDING,
-        /**
-         * Sort the adjacency lists in descending (alphabetical) order.
-         */
-        DESCENDING,
-        /**
-         * Sort the adjacency lists in random order.
-         */
-        RANDOM
-    }
-
     @CommandLine.Option(names = "--size", required = true,
             description = "Number of nodes to use in the benchmark ")
     private int size;
@@ -44,7 +44,7 @@ public class BenchmarkCommand implements Callable<Integer> {
     @CommandLine.Option(names = "--no-preserve-path", negatable = true,
             defaultValue = "true",
             description = "Ensure that there is always a path " +
-                    "between the start city and end city for " +
+                    "between the start airport and end airport for " +
                     "each draw. Defaults to true.")
     private boolean preservePath;
 
@@ -75,9 +75,10 @@ public class BenchmarkCommand implements Callable<Integer> {
     private SortMode sortMode;
 
     @CommandLine.Parameters(index = "0",
-            description = "Cities to start and end search at",
+            description = "Airports (represented by their codes) to start " +
+                    "and end search at",
             arity = "2")
-    private String[] cities;
+    private String[] airports;
 
     /**
      * Randomly select unique elements from an array of strings.
@@ -113,20 +114,20 @@ public class BenchmarkCommand implements Callable<Integer> {
             return 1;
         }
 
-        Graph citiesGraph;
+        Graph airportGraph;
         var source = Files.asCharSource(graphSrc, StandardCharsets.UTF_8);
 
         try {
             var r = source.openBufferedStream();
-            citiesGraph = new Graph(r, x -> {});
+            airportGraph = new Graph(r, x -> {});
         } catch (IOException e) {
             System.err.printf("Error: cannot read graph from file: %s%n",
                     e.getLocalizedMessage());
             return 1;
         }
 
-        var origNodes = citiesGraph.getNodeCount();
-        var origEdges = citiesGraph.getEdgeCount();
+        var origNodes = airportGraph.getNodeCount();
+        var origEdges = airportGraph.getEdgeCount();
         System.out.printf("Loaded graph with %d nodes and %d edges.%n",
                 origNodes, origEdges);
 
@@ -148,9 +149,10 @@ public class BenchmarkCommand implements Callable<Integer> {
         var toVisit = new ArrayDeque<Node<String>>();
 
         try {
-            citiesGraph.breadthFirstSearch(cities[0], cities[1], pred, toVisit);
+            airportGraph.breadthFirstSearch(airports[0], airports[1], pred,
+                    toVisit);
         } catch (IllegalArgumentException e) {
-            System.err.printf("Error: city name not found in graph: %s%n",
+            System.err.printf("Error: airport code not found in graph: %s%n",
                     e.getLocalizedMessage());
             return 1;
         }
@@ -160,11 +162,11 @@ public class BenchmarkCommand implements Callable<Integer> {
             System.out.printf("Path found using file adjacency list ordering:" +
                     " %s.%n",
                     Joiner.on(" -> ").join(
-                        Helpers.BFSPathExtract(cities[0], cities[1], pred)));
+                        Helpers.BFSPathExtract(airports[0], airports[1], pred)));
         } catch (IllegalArgumentException e) {
             System.err.printf("Error: no valid path contained " +
                     "in predecessor map between %s and %s%n.",
-                    cities[0], cities[1]);
+                    airports[0], airports[1]);
             return 1;
         }
 
@@ -178,12 +180,12 @@ public class BenchmarkCommand implements Callable<Integer> {
         var edgesPerLoop = new long[loopsPerDraw];
         var rng = new Random();
         for (int draw = 0; draw < draws; ++draw) {
-            var mutatedGraph = citiesGraph.remove(
-                    Select(citiesGraph.getNames().toArray(new String[0]),
+            var mutatedGraph = airportGraph.remove(
+                    Select(airportGraph.getNames().toArray(new String[0]),
                             origNodes - size, rng));
             var nodeNames = mutatedGraph.getNames();
-            if (!(nodeNames.contains(cities[0]))
-                    || !(nodeNames.contains(cities[1]))) {
+            if (!(nodeNames.contains(airports[0]))
+                    || !(nodeNames.contains(airports[1]))) {
                 System.err.println("Warning: modified graph does " +
                         "not contain source and destination nodes. Retrying.");
                 draw -= 1;
@@ -195,9 +197,9 @@ public class BenchmarkCommand implements Callable<Integer> {
             try {
                 pred.clear();
                 toVisit.clear();
-                mutatedGraph.breadthFirstSearch(cities[0], cities[1], pred,
+                mutatedGraph.breadthFirstSearch(airports[0], airports[1], pred,
                         toVisit);
-                Helpers.BFSPathExtract(cities[0], cities[1], pred);
+                Helpers.BFSPathExtract(airports[0], airports[1], pred);
             } catch (IllegalArgumentException e) {
                 if (preservePath) {
                     System.err.println("Warning: unable to find a path " +
@@ -230,7 +232,7 @@ public class BenchmarkCommand implements Callable<Integer> {
                 toVisit.clear();
 
                 var start = System.nanoTime();
-                mutatedGraph.breadthFirstSearch(cities[0], cities[1],
+                mutatedGraph.breadthFirstSearch(airports[0], airports[1],
                         pred, toVisit);
                 var end = System.nanoTime();
                 var elapsed = (end - start);
@@ -238,7 +240,7 @@ public class BenchmarkCommand implements Callable<Integer> {
                 System.out.printf("Draw %d: loop %d: %d edges: %d ns: " +
                                 "path found: %s.%n", draw, loop, edges,
                         elapsed, pathExists ? Joiner.on(" -> ").join(
-                                Helpers.BFSPathExtract(cities[0], cities[1],
+                                Helpers.BFSPathExtract(airports[0], airports[1],
                                         pred)) : "no path");
 
                 if (loop < warmupLoopsPerDraw)

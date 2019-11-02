@@ -162,7 +162,7 @@ public class Graph {
      *                                  given name(s).
      */
     public Graph remove(String... n) {
-        var namesToRemove = Set.of(n);
+        var namesToRemove = new HashSet<>(Arrays.asList(n));
         if(!namesToRemove.stream()
                 .allMatch(name -> nodes.containsKey(name)))
             throw new IllegalArgumentException("one or more nodes specified" +

@@ -5,24 +5,30 @@
  * For more details take a look at the Java Quickstart chapter in the Gradle
  * User Manual available at https://docs.gradle.org/5.6.3/userguide/tutorial_java_projects.html
  */
-
 plugins {
     // Apply the java plugin to add support for Java
     id 'java'
+    
+    // Apply the graal plugin to allow for AOT-compilation and native images
+    id 'com.palantir.graal' version '0.6.0-30-gade71a8'
 
     // Apply the application plugin to add support for building a CLI application
     id 'application'
 }
 
+group = 'ce2001.sem11920.group3'
+
 repositories {
     // Use jcenter for resolving dependencies.
     // You can declare any Maven/Ivy/file repository here.
     jcenter()
+    maven { url 'https://jitpack.io' }
 }
 
 dependencies {
     // This dependency is used by the application.
     implementation 'info.picocli:picocli:4.0.4'
+    annotationProcessor 'com.github.bsideup.jabel:jabel-javac-plugin:0.2.0'
     annotationProcessor 'info.picocli:picocli-codegen:4.0.4'
     implementation 'com.google.guava:guava:28.0-jre'
     implementation 'org.apache.commons:commons-csv:1.7'
@@ -36,7 +42,22 @@ application {
     mainClassName = 'Lab4.App'
 }
 
-task BenchmarkNoJitShenandoah(type : JavaExec) {
+compileJava {
+    options.compilerArgs = ['--release', '8']
+    options.compilerArgs += ["-Aproject=${project.group}/${project.name}"]
+}
+
+graal {
+    graalVersion '19.2.1'
+    mainClass 'Lab4.App'
+    outputName 'Lab4'
+}
+
+task benchmarkNoJitShenandoah(type: JavaExec) {
+    group = 'Benchmarking'
+    description = ('Run the benchmark application without JIT using the ' +
+                   'Shenandoah low-latency GC')
+
     classpath = sourceSets.main.runtimeClasspath
     main = 'Lab4.App'
     jvmArgs = ['-XX:+AlwaysPreTouch', '-Xms = -Xmx',
@@ -47,7 +68,11 @@ task BenchmarkNoJitShenandoah(type : JavaExec) {
     minHeapSize = '4G'
 }
 
-task BenchmarkJitShenandoah(type : JavaExec) {
+task benchmarkJitShenandoah(type: JavaExec) {
+    group = 'Benchmarking'
+    description = ('Run the benchmark application with JIT with using the ' +
+                   'Shenandoah low-latency GC')
+
     classpath = sourceSets.main.runtimeClasspath
     main = 'Lab4.App'
     jvmArgs = ['-XX:+AlwaysPreTouch', '-Xms = -Xmx',
