@@ -137,7 +137,7 @@ results, and also needs careful tuning of the warm-up loops to ensure that
 the measurement loops run with consistent timings. 
 
 ```
-./gradlew run --args='<arguments'
+./gradlew run --args='<arguments>'
 ```
 
 ### Using the JVM without JIT using the Shenandoah low-latency GC.
@@ -152,7 +152,7 @@ You might need to alter the task definition in `build.gradle` to set
 memory-related options specific to your platform.
 
 ```
-./gradlew benchmarkNoJitShenandoah --args='<arguments'
+./gradlew benchmarkNoJitShenandoah --args='<arguments>'
 ```
 
 ### Using the JVM with the JIT using the Shenandoah low-latency GC.
@@ -167,7 +167,7 @@ You might need to alter the task definition in `build.gradle` to set
 memory-related options specific to your platform.
 
 ```
-./gradlew benchmarkJitShenandoah --args='<arguments'
+./gradlew benchmarkJitShenandoah --args='<arguments>'
 ``` 
 
 ## Benchmark results
@@ -177,3 +177,19 @@ See results in the `results/` folder.
 ## LICENSE
 
 See `LICENSE` for more details.
+
+This license does not apply to the data files, which are covered under
+their own terms as described below.
+
+## Data Attribution
+
+`data/connected_airports.csv` was generated using data from 
+[openflights.org](https://www.openflights.org). Its source file is located
+at `data/routes.dat` and the Python script used to generate that is located
+at `utils/extractairportconnections.py`.
+
+Both datasets / databases are available under the Open Database License,
+and any rights in individual contents of the database are licensed under 
+the Database Contents License.
+
+Copies of both of these licenses can be found in the file `data/LICENSE`.
