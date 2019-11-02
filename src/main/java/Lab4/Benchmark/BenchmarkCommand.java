@@ -265,10 +265,6 @@ public class BenchmarkCommand implements Callable<Integer> {
                 DoubleStream.of(edgesPerDraw).average().getAsDouble(),
                 DoubleStream.of(timePerDraw).average().getAsDouble());
 
-        var path = Helpers.BFSPathExtract(cities[0], cities[1], pred);
-        var joiner = Joiner.on(" -> ");
-        System.out.printf("BFS path: %s%n", joiner.join(path));
-
         return 0;
     }
 }
