@@ -55,7 +55,7 @@ public class BenchmarkCommand implements Callable<Integer> {
 
     @CommandLine.Option(names = "--warmup-loops-per-draw", required = false,
             description = "Number of warm up loops to do per random " +
-                    "draw before accumulating actual results",
+                    "draw before accumulating actual results. Defaults to 20.",
             defaultValue = "20")
     private int warmupLoopsPerDraw;
 
@@ -68,7 +68,7 @@ public class BenchmarkCommand implements Callable<Integer> {
                     "RFC 4810 format. Assumbed to be in UTF-8 encoding.")
     private File graphSrc;
 
-    @CommandLine.Option(names = "--sort-order", required = false,
+    @CommandLine.Option(names = "--sort-order", required = true,
                         defaultValue = "RANDOM", description = "How to sort " +
             "the adjacency lists of each node. " +
             "Valid values: ${COMPLETION-CANDIDATES}")
@@ -184,8 +184,8 @@ public class BenchmarkCommand implements Callable<Integer> {
                     Select(airportGraph.getNames().toArray(new String[0]),
                             origNodes - size, rng));
             var nodeNames = mutatedGraph.getNames();
-            if (!(nodeNames.contains(airports[0]))
-                    || !(nodeNames.contains(airports[1]))) {
+            if ((!nodeNames.contains(airports[0]))
+                    || (!nodeNames.contains(airports[1]))) {
                 System.err.println("Warning: modified graph does " +
                         "not contain source and destination nodes. Retrying.");
                 draw -= 1;
